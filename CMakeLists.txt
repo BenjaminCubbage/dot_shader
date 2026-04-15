@@ -1,10 +1,18 @@
 cmake_minimum_required(VERSION 3.16)
 project(dot_shader)
+set(CMAKE_CXX_STANDARD 20)
 
-set(
-    CMAKE_RUNTIME_OUTPUT_DIRECTORY
-    ${CMAKE_BINARY_DIR}/artifacts)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY                ${CMAKE_BINARY_DIR}/artifacts)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG          ${CMAKE_BINARY_DIR}/artifacts)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/artifacts)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL     ${CMAKE_BINARY_DIR}/artifacts)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/artifacts)
 
 add_executable(
     dot_shader
-    main.cpp)
+    ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window.cpp
+    ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_manager.cpp)
+
+target_include_directories(dot_shader PRIVATE 
+    ${CMAKE_SOURCE_DIR}/src)
