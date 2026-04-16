@@ -1,17 +1,20 @@
 #pragma once
+#include <functional>
 #include <windows.h>
+#include "window_event.h"
 
 namespace DotShader::Window {
 
 /*
     This class is designed to be used by the WindowManager.
 
-    Do not destruct a Window that was constructed on a different
-    thread.
+    It should only be created, destructed, and accessed on the
+    same GUI thread.
 */
 class Window {
   public:
-    Window();
+    Window(WindowEventHandlers handlers);
+
     ~Window();
     Window(Window&& other) noexcept;
 
@@ -34,7 +37,8 @@ class Window {
         return hinstance;
     }
 
-    HWND hwnd{ 0 };
+    HWND m_hwnd{ 0 };
+    WindowEventHandlers m_handlers;
 };
 
 }

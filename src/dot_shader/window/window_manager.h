@@ -1,11 +1,14 @@
 #pragma once
 #include <atomic>
+#include <functional>
 #include <optional>
 #include <shared_mutex>
 #include <thread>
+#include <utility>
 #include <vector>
 #include <windows.h>
 #include "dot_shader/thread/mpmc_queue.h"
+#include "window_event.h"
 #include "window.h"
 
 namespace DotShader::Window {
@@ -32,7 +35,7 @@ class WindowManager {
 
     static Result start();
     static Result stop();
-    static Result open_window();
+    static Result open_window(WindowEventHandlers handlers);
 
     static inline State state() {
         return m_state;
@@ -46,6 +49,7 @@ class WindowManager {
         };
 
         Type type;
+        std::optional<WindowEventHandlers> handlers{ std::nullopt };
     };
     
     using ThreadQueue = Thread::MPMCQueue<ThreadMessage, QueueCapacity>;
@@ -55,8 +59,8 @@ class WindowManager {
     /*
         This is not accessed by the window thread.
     */
-    static inline std::atomic<State>          m_state{ State::Stopped };
     static inline std::optional<std::jthread> m_thread{ std::nullopt };
+    static inline std::atomic<State>          m_state{ State::Stopped };
     
     /*
         This is shared with the window thread.

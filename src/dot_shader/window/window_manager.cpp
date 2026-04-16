@@ -1,4 +1,5 @@
 #include "window_manager.h"
+#include "window_event.h"
 #include <assert.h>
 #include <iostream>
 #include <mutex>
@@ -65,7 +66,8 @@ WindowManager::Result WindowManager::stop() {
     return Result::Success;
 }
 
-WindowManager::Result WindowManager::open_window() {
+WindowManager::Result WindowManager::open_window(
+    WindowEventHandlers handlers) {
     if (m_state.load(std::memory_order_relaxed) != State::Started)
         return Result::NotStarted;
 
@@ -77,8 +79,10 @@ WindowManager::Result WindowManager::open_window() {
         ThreadQueue::EnqTicket ticket;
         if (!m_thread_queue.try_enqueue_acquire(&ticket))
             return Result::ThreadQueueFull;
+
         m_thread_queue.enqueue_publish(ticket, ThreadMessage{
-            .type = ThreadMessage::Type::OpenWindow
+            .type     = ThreadMessage::Type::OpenWindow,
+            .handlers = std::move(handlers)
         });
     }
 
@@ -110,14 +114,18 @@ void WindowManager::thread_loop(void*) {
             the thread queue; the only time the thread queue is accessed in 
             an unsharable manner is when this thread has already been joined.
         */
-        while (const auto message = m_thread_queue.try_dequeue()) {
+        while (auto message = m_thread_queue.try_dequeue()) {
             switch (message->type) {
-            case ThreadMessage::Type::OpenWindow:
-                m_windows.emplace_back();
+            case ThreadMessage::Type::OpenWindow: {
+                try {
+                    m_windows.emplace_back(
+                        std::move(*message->handlers));
+                } catch (...) { }
                 break;
+            }
 
             case ThreadMessage::Type::Stop:
-                /* todo */
+                m_windows.clear();
                 return;
             }
         }
