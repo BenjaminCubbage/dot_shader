@@ -15,10 +15,10 @@ Window::Window(WindowEventHandlers handlers)
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         hinstance(),
-        NULL);
+        nullptr);
     if (m_hwnd == 0) {
         handlers.call(WindowEventType::CreationFailed, WindowEvent{});
         throw std::exception(
@@ -61,9 +61,12 @@ ATOM Window::window_class() {
     static ATOM atom{};
     if (atom == 0) {
         WNDCLASSA wc{};
-        wc.lpfnWndProc   = &Window::window_proc;
         wc.hInstance     = hinstance();
+        wc.lpfnWndProc   = &Window::window_proc;
         wc.lpszClassName = "dotshader";
+
+        wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+        wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
 
         atom = RegisterClassA(&wc);
         if (atom == 0)

@@ -18,7 +18,7 @@ WindowManager::Result WindowManager::start() {
     }
 
     m_signal.emplace(CreateEventA(
-        NULL, 0, QueueCapacity, NULL));
+        nullptr, 0, QueueCapacity, nullptr));
     m_thread.emplace(&thread_loop, nullptr);
 
     m_state.store(
@@ -104,7 +104,7 @@ void WindowManager::thread_loop(void*) {
             MWMO_INPUTAVAILABLE);
 
         MSG msg{};
-        while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE) > 0) {
+        while (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE) > 0) {
             TranslateMessage(&msg);
             DispatchMessageA(&msg);
         }
