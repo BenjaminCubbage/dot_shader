@@ -1,6 +1,4 @@
 #include <iostream>
-#include <thread>
-#include <chrono>
 #include <format>
 #include "dot_shader/window/window_event.h"
 #include "dot_shader/window/window_manager.h"

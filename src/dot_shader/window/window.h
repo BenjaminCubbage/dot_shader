@@ -9,7 +9,7 @@ namespace DotShader::Window {
     This class is designed to be used by the WindowManager.
 
     It should only be created, destructed, and accessed on the
-    same GUI thread.
+    UI thread.
 */
 class Window {
   public:
@@ -22,7 +22,7 @@ class Window {
     Window& operator=(const Window&) = delete;
 
   private:
-    static LRESULT window_proc(
+    static LRESULT CALLBACK window_proc(
         HWND hwnd,
         unsigned int umsg,
         WPARAM w_param,

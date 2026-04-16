@@ -65,8 +65,8 @@ ATOM Window::window_class() {
         wc.lpfnWndProc   = &Window::window_proc;
         wc.lpszClassName = "dotshader";
 
-        wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
         wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
+        wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
 
         atom = RegisterClassA(&wc);
         if (atom == 0)
