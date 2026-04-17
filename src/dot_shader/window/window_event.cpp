@@ -1,5 +1,5 @@
 #include "window_event.h"
-#include "window.h"
+#include "window_inst.h"
 
 namespace DotShader::Window {
 

@@ -4,7 +4,7 @@
 
 namespace DotShader::Window {
 
-class Window;
+class WindowInst;
 
 enum class WindowEventType {
     Created,
@@ -15,11 +15,11 @@ enum class WindowEventType {
 
 union WindowEvent {
     struct {
-        Window* window;
+        WindowInst* window_inst;
     } created;
 
     struct {
-        Window* window;
+        WindowInst* window_inst;
         int x;
         int y;
     } mouse_move;

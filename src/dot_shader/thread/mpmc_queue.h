@@ -57,7 +57,7 @@ class MPMCQueue
         
         This function is not thread-safe.
     */
-    void reset() {
+    void reset() noexcept {
         m_head = 0;
         m_tail = 0;
 
@@ -72,7 +72,7 @@ class MPMCQueue
         nothing found.
     */
     std::optional<T>
-    try_dequeue()
+    try_dequeue() noexcept
     {
         for (;;)
         {
@@ -117,10 +117,10 @@ class MPMCQueue
         head cannot move beyond an uncommitted reservation, and the
         queue will eventually halt on the uncommitted enqueue.
 
-        Thus, only light work--or none at all--should be performed
-        between reservation and commiting.
+        Thus, only light, noexcept work--or none at all--should be performed
+        between reservation and committing.
     */
-    bool try_enqueue_acquire(EnqTicket* out_ticket)
+    bool try_enqueue_acquire(EnqTicket* out_ticket) noexcept
     {
         for (;;)
         {
@@ -154,7 +154,7 @@ class MPMCQueue
     /*
         Mark the acquired ticket as "ready".
     */
-    void enqueue_publish(EnqTicket ticket, T&& data)
+    void enqueue_publish(EnqTicket ticket, T&& data) noexcept
     {
         ticket.cell->data = std::move(data);
         ticket.cell->seq.store(ticket.t + 1, std::memory_order_release);

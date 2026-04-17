@@ -10,10 +10,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE        ${CMAKE_BINARY_DIR}/artifacts)
 
 add_executable(dot_shader
     ${CMAKE_SOURCE_DIR}/src/main.cpp
-    ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_event.cpp
-    ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_event.h
     ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_manager.cpp
     ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_manager.h
+    ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_inst.cpp
+    ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window_inst.h
     ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window.cpp
     ${CMAKE_SOURCE_DIR}/src/dot_shader/window/window.h)
 

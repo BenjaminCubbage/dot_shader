@@ -1,44 +1,26 @@
 #pragma once
-#include <functional>
 #include <windows.h>
-#include "window_event.h"
 
 namespace DotShader::Window {
+    
+class WindowInst;
 
-/*
-    This class is designed to be used by the WindowManager.
-
-    It should only be created, destructed, and accessed on the
-    UI thread.
-*/
-class Window {
+class IWindow {
   public:
-    Window(WindowEventHandlers handlers);
+    IWindow() {}
+    ~IWindow() {}
 
-    ~Window();
-    Window(Window&& other) noexcept;
+    IWindow           (const IWindow&) = delete;
+    IWindow& operator=(const IWindow&) = delete;
+    IWindow           (IWindow&&) noexcept = default;
+    IWindow& operator=(IWindow&&) noexcept = default;
 
-    Window(const Window&)            = delete;
-    Window& operator=(const Window&) = delete;
+    virtual const char* window_title() { return "Window"; }
 
-  private:
-    static LRESULT CALLBACK window_proc(
-        HWND hwnd,
-        unsigned int umsg,
-        WPARAM w_param,
-        LPARAM l_param);
-
-    static ATOM window_class();
-
-    static inline HINSTANCE hinstance() {
-        static HINSTANCE hinstance{};
-        if (!hinstance)
-            hinstance = GetModuleHandleA(0);
-        return hinstance;
-    }
-
-    HWND m_hwnd{ 0 };
-    WindowEventHandlers m_handlers;
+    virtual void on_created(WindowInst* window_inst) {}
+    virtual void on_creation_failed() {}
+    virtual void on_mouse_move(WindowInst* window_inst, int x, int y) {}
+    virtual void on_closed() {}
 };
 
 }

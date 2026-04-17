@@ -29,6 +29,9 @@ WindowManager::Result WindowManager::start() {
 }
 
 WindowManager::Result WindowManager::stop() {
+    if (std::this_thread::get_id() == m_thread->get_id())
+        return Result::CannotJoinToUIThread;
+
     State swap{ State::Started };
     if (!m_state.compare_exchange_strong(
         swap,
@@ -49,14 +52,16 @@ WindowManager::Result WindowManager::stop() {
         .type = ThreadMessage::Type::Stop
     });
 
-    assert(m_signal.has_value());
-    assert(m_thread.has_value());
     SetEvent(*m_signal);
     m_thread->join();
     m_thread.reset();
     m_signal.reset();
 
     {
+        /*
+            We must lock here because we may be trying to
+            simultaneously open a window.
+        */
         std::unique_lock lk(m_queue_mutex);
         m_thread_queue.reset();
     }
@@ -68,7 +73,7 @@ WindowManager::Result WindowManager::stop() {
 }
 
 WindowManager::Result WindowManager::open_window(
-    WindowEventHandlers handlers) {
+    std::unique_ptr<IWindow> window) {
     if (m_state.load(std::memory_order_relaxed) != State::Started)
         return Result::NotStarted;
 
@@ -82,8 +87,8 @@ WindowManager::Result WindowManager::open_window(
             return Result::ThreadQueueFull;
 
         m_thread_queue.enqueue_publish(ticket, ThreadMessage{
-            .type     = ThreadMessage::Type::OpenWindow,
-            .handlers = std::move(handlers)
+            .type   = ThreadMessage::Type::OpenWindow,
+            .window = std::move(window)
         });
     }
 
@@ -119,8 +124,9 @@ void WindowManager::thread_loop(void*) {
             switch (message->type) {
             case ThreadMessage::Type::OpenWindow: {
                 try {
-                    m_windows.emplace_back(
-                        std::move(*message->handlers));
+                    m_window_insts.emplace_back(
+                        std::move(*message->window),
+                        &cleanup_destroyed_inst);
                 } catch (std::exception e) {
                     std::cout << e.what() << std::endl;
                 }
@@ -128,9 +134,18 @@ void WindowManager::thread_loop(void*) {
             }
 
             case ThreadMessage::Type::Stop:
-                m_windows.clear();
+                m_window_insts.clear();
                 return;
             }
+        }
+    }
+}
+
+void WindowManager::cleanup_destroyed_inst(WindowInst* window_inst) {
+    for (auto it = m_window_insts.begin(); it != m_window_insts.end(); ++it) {
+        if (&*it == window_inst) {
+            m_window_insts.erase(it);
+            break;
         }
     }
 }
