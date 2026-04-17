@@ -20,7 +20,7 @@ Window::Window(WindowEventHandlers handlers)
         hinstance(),
         nullptr);
     if (m_hwnd == 0) {
-        handlers.call(WindowEventType::CreationFailed, WindowEvent{});
+        m_handlers.call(WindowEventType::CreationFailed, {});
         throw std::exception(
             std::format("Error creating window: {}", GetLastError()).c_str());
     }
@@ -31,7 +31,7 @@ Window::Window(WindowEventHandlers handlers)
         GWLP_USERDATA,
         reinterpret_cast<LONG_PTR>(this));
     if (ptr == 0 && GetLastError() != 0) {
-        handlers.call(WindowEventType::CreationFailed, WindowEvent{});
+        m_handlers.call(WindowEventType::CreationFailed, {});
         throw std::exception(
             std::format("Error setting window data: {}", GetLastError()).c_str());
     }
@@ -101,11 +101,13 @@ LRESULT Window::window_proc(
                 .y      = y
             }
         });
-        break;    
-    }
+        break;
     }
 
-    // window->m_handlers.call(WindowEventType::Created, WindowEvent{});
+    case WM_NCDESTROY:
+        window->m_handlers.call(WindowEventType::Closed, {});
+        break;
+    }
 
     return DefWindowProc(hwnd, umsg, w_param, l_param);
 }

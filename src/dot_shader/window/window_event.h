@@ -7,9 +7,10 @@ namespace DotShader::Window {
 class Window;
 
 enum class WindowEventType {
-    CreationFailed,
     Created,
-    MouseMove
+    CreationFailed,
+    MouseMove,
+    Closed
 };
 
 union WindowEvent {

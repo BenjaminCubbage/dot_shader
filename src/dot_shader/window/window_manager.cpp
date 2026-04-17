@@ -1,6 +1,7 @@
 #include "window_manager.h"
 #include "window_event.h"
 #include <assert.h>
+#include <stdexcept>
 #include <iostream>
 #include <mutex>
 #include <windows.h>
@@ -120,7 +121,9 @@ void WindowManager::thread_loop(void*) {
                 try {
                     m_windows.emplace_back(
                         std::move(*message->handlers));
-                } catch (...) { }
+                } catch (std::exception e) {
+                    std::cout << e.what() << std::endl;
+                }
                 break;
             }
 
