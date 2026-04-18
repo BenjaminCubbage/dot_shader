@@ -20,6 +20,7 @@ class IWindow {
     virtual void on_created(WindowInst* window_inst) {}
     virtual void on_creation_failed() {}
     virtual void on_mouse_move(WindowInst* window_inst, int x, int y) {}
+    virtual void on_resize(WindowInst* window_inst, int w, int h) {}
     virtual void on_closed() {}
 };
 

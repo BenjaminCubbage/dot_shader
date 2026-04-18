@@ -16,10 +16,13 @@ class MainWindow final : public IWindow {
     }
 
     void on_created(WindowInst* window_inst) override {
-        std::cout << "created main" << std::endl;
     }
 
     void on_mouse_move(WindowInst* window_inst, int x, int y) override {
+    }
+
+    void on_resize(WindowInst* window_inst, int w, int h) override {
+        std::cout << w << " " << h << std::endl;
     }
 
     void on_creation_failed() override {
