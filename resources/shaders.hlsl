@@ -20,23 +20,15 @@ PSInput VSMain(VSInput input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    float2 vec1 = {
-        2.0f,
-        1.0f
-    };
+    float2 vec1 = { 2.0f, 1.0f };
+    float2 vec2 = { input.pos.x * 0.0002f, input.pos.y * 0.0002f };
 
-    float2 vec2 = float2(
-        input.pos.x * 0.0002f,
-        input.pos.y * 0.0002f);
+    float dotp = dot(vec1, vec2);
+    float4 output_clr = { dotp, 0, 0, 0 };
 
-    float dotp = (vec1.x * vec2.x) + (vec1.y * vec2.y);
+    int ix = input.pos.x;
+    int iy = input.pos.y;
 
-    float4 output_clr = {
-        dotp,
-        0,
-        0,
-        0
-    };
-
+    output_clr.b += ((ix & 2) ^ (iy & 2)) * 0.03f;
     return output_clr;
 }
