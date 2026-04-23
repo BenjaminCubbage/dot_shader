@@ -1,3 +1,7 @@
+#include "directx/d3d12sdklayers.h"
+#include "directx/d3d12sdklayers.h"
+#include <wrl/client.h>
+
 #include <assert.h>
 #include <atomic>
 #include <chrono>

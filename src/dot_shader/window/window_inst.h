@@ -7,12 +7,13 @@
 namespace DotShader::Window {
 
 /*
-    This class is designed to be used by the WindowManager.
+    This class is designed to be managed by the WindowManager.
 
     **It should only be created, destructed, and accessed on the
     UI thread.**
     
-    **Its location in memory should be stable
+    **Its location in memory should be stable, which is why there's
+    no move constructor/assignment.**
 */
 class WindowInst {
   public:
@@ -27,6 +28,10 @@ class WindowInst {
 
     WindowInst           (WindowInst&&) = delete;
     WindowInst& operator=(WindowInst&&) = delete;
+    
+    inline HWND hwnd() {
+        return m_hwnd;
+    }
 
   private:
     static LRESULT CALLBACK window_proc(

@@ -2,10 +2,14 @@
 #include <iostream>
 #include <format>
 #include <memory>
+#include "dot_shader/env/env.h"
+#include "dot_shader/render/renderer.h"
 #include "dot_shader/window/window.h"
 #include "dot_shader/window/window_manager.h"
 #include "dot_shader/window/window_inst.h"
 
+using namespace DotShader::Env;
+using namespace DotShader::Render;
 using namespace DotShader::Window;
 
 std::atomic_flag main_window_closed;
@@ -16,6 +20,7 @@ class MainWindow final : public IWindow {
     }
 
     void on_created(WindowInst* window_inst) override {
+        Renderer::initialize(window_inst->hwnd());
     }
 
     void on_mouse_move(WindowInst* window_inst, int x, int y) override {
@@ -36,7 +41,10 @@ class MainWindow final : public IWindow {
     }
 };
 
-int main() {
+int main(int argc, char** args) {
+    if (!Env::populate_settings_from_args(argc, args))
+        return 1;
+
     WindowManager::start();
     WindowManager::open_window<MainWindow>();
 
@@ -44,4 +52,5 @@ int main() {
         false,
         std::memory_order_acquire);
     WindowManager::stop();
+    return 0;
 }
